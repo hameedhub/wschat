@@ -6,6 +6,7 @@ import (
 )
 
 type Channel struct{
+	
 
 }
 
