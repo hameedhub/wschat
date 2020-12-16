@@ -1,0 +1,31 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket Test</title>
+</head>
+<body>
+    
+    <script>
+        let socket = new WebSocket("ws://localhost:8080/");
+
+        socket.onopen = () =>{
+            console.log("Connected")
+            socket.send("Hello")
+
+        }
+        socket.onmessage = (msg) =>{    
+            console.log(msg)
+        }
+        socket.onclose = (event) => {
+            console.log("socket close")
+            socket.close()
+        }
+        socket.onerror = (error)=>{
+            console.log(error)
+        }
+
+
+    </script>
+</body>
+</html>

@@ -1,30 +1,45 @@
 package main
 
 import (
+	"log"
 	"net/http"
-	"time"
 
-	"github.com/gorilla/mux"
-	"github.com/hameedhub/wschat/handlers"
+	"github.com/gorilla/websocket"
 )
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func reader(conn *websocket.Conn) {
+	for {
+		messageType, p, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println(string(p))
+
+		if err := conn.WriteMessage(messageType, p); err != nil {
+			log.Println(err)
+			return
+		}
+	}
+}
+
 func main() {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 
-	sm := mux.NewRouter()
-
-	// Welcome endpoint
-	sm.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-
-		handlers.SuccessResponse(w, "Welcome to Chat IO", make([]string, 1))
+		ws, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println("Sockect connnection was successfully created!")
+		reader(ws)
 	})
 
-	sv := &http.Server{
-		Addr:           ":9090",
-		Handler:        sm,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
-	}
-	sv.ListenAndServe()
-
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
