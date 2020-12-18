@@ -1,8 +1,5 @@
 module github.com/hameedhub/wschat
 
-go 1.15
+go 1.14
 
-require (
-	github.com/gorilla/mux v1.8.0
-	go.mongodb.org/mongo-driver v1.4.2 // indirect
-)
+require github.com/gorilla/websocket v1.4.2
